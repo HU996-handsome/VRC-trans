@@ -1,0 +1,31 @@
+<Window x:Class="VRCOverlay.UI.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VRC Overlay Settings"
+        Height="200" Width="400"
+        WindowStartupLocation="CenterOwner"
+        Background="#FF1A1A2E">
+
+    <StackPanel Margin="20">
+        <TextBlock Text="主程序地址" Foreground="White" Margin="0,0,0,4"/>
+        <TextBox x:Name="TxtApiUrl" Text="http://127.0.0.1:5001"
+                 Background="#FF0F3460" Foreground="White" BorderBrush="#33FFFFFF"
+                 Padding="6" Margin="0,0,0,12"/>
+
+        <TextBlock Text="说明" Foreground="#888" FontSize="11" Margin="0,0,0,4"/>
+        <TextBlock Foreground="#888" FontSize="11" TextWrapping="Wrap">
+            确保 VRC-Translator 主程序已运行。
+            此程序通过HTTP轮询主程序的翻译数据，
+            并在SteamVR中作为手腕叠加层显示。
+        </TextBlock>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="确定" Width="80" Margin="0,0,8,0"
+                    Background="#FF4FC3F7" Foreground="Black" BorderThickness="0"
+                    Click="BtnOk_Click"/>
+            <Button Content="取消" Width="80"
+                    Background="#33FFFFFF" Foreground="White" BorderThickness="0"
+                    Click="BtnCancel_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

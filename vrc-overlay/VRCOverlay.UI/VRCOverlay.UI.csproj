@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>..\..\resource\vrc-overlay.ico</ApplicationIcon>
+    <AssemblyName>VRCOverlay</AssemblyName>
+    <RootNamespace>VRCOverlay.UI</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VRCOverlay.Win32\VRCOverlay.Win32.csproj" />
+  </ItemGroup>
+</Project>

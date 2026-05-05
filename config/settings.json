@@ -1,0 +1,80 @@
+{
+  "asr": {
+    "backend": "dashscope",
+    "language_hint": "zh",
+    "dashscope_api_key": "",
+    "dashscope_model": "paraformer-realtime-v2",
+    "qwen_model": "qwen3-asr-flash-realtime-2026-02-10",
+    "local_engine": "sensevoice",
+    "local_vad_mode": "silero",
+    "local_vad_threshold": 0.5,
+    "local_vad_silence_duration": 0.8,
+    "hot_words_enabled": true,
+    "soniox_api_key": ""
+  },
+  "translation": {
+    "primary_backend": "dashscope",
+    "target_language": "ja",
+    "secondary_target_language": "",
+    "fallback_language": "en",
+    "dashscope_api_key": "",
+    "qwen_mt_model": "qwen-mt-flash",
+    "deepl_api_key": "",
+    "deepl_formality": "default",
+    "openrouter_api_key": "",
+    "openrouter_base_url": "https://openrouter.ai/api/v1",
+    "openrouter_model": "google/gemini-2.5-flash",
+    "openrouter_temperature": 0.3,
+    "openrouter_timeout": 15.0,
+    "formality": "casual",
+    "sentence_style": "natural",
+    "streaming_enabled": true,
+    "smart_target_enabled": false,
+    "smart_target_strategy": "most_common"
+  },
+  "reverse_translation": {
+    "enabled": true,
+    "backend": "same",
+    "source_language": "auto",
+    "target_language": "zh",
+    "loopback_device": "",
+    "segment_duration_s": 2.0,
+    "tail_silence_s": 1.2,
+    "self_suppress": true,
+    "self_suppress_seconds": 0.65
+  },
+  "audio": {
+    "sample_rate": 16000,
+    "channels": 1,
+    "block_size": 4096,
+    "mic_device_index": null,
+    "denoise_strength": 0.5
+  },
+  "osc": {
+    "enabled": true,
+    "send_host": "127.0.0.1",
+    "send_port": 9000,
+    "listen_port": 9001,
+    "max_text_length": 144,
+    "min_send_interval": 1.5,
+    "mic_control_enabled": true,
+    "mute_delay_seconds": 0.2
+  },
+  "display": {
+    "show_partial_results": true,
+    "dual_language": false,
+    "enable_ja_furigana": false,
+    "enable_zh_pinyin": false,
+    "text_fancy_style": "none",
+    "panel_width": 500,
+    "panel_height": 200,
+    "panel_opacity": 0.95,
+    "overlay_port": 5002
+  },
+  "ui": {
+    "language": "zh",
+    "theme": "dark",
+    "web_port": 5001,
+    "auto_start_pipeline": false
+  }
+}

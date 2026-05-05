@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRC-Translator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VRC-Translator</h1>
+            <div class="status-bar">
+                <button id="btn-toggle-mute" class="btn btn-sm" title="闭麦翻译模式">🔇 闭麦</button>
+                <button id="btn-toggle-reverse" class="btn btn-sm" title="翻译别人说话">🔄 反向翻译</button>
+            </div>
+        </header>
+
+        <!-- Startup Panel -->
+        <div class="startup-panel" id="startup-panel">
+            <div class="startup-left">
+                <div class="vrc-status-icon" id="vrc-status-icon">🎮</div>
+                <div class="vrc-status-info">
+                    <div class="vrc-status-title" id="vrc-status-title">检测 VRChat 状态...</div>
+                    <div class="vrc-status-detail" id="vrc-status-detail">请先启动 VRChat</div>
+                </div>
+            </div>
+            <div class="startup-right">
+                <button id="btn-start-pipeline" class="btn btn-start">
+                    <span class="btn-icon">▶</span> 启动翻译
+                </button>
+                <button id="btn-stop-pipeline" class="btn btn-stop" style="display:none">
+                    <span class="btn-icon">■</span> 停止翻译
+                </button>
+                <button id="btn-refresh-vrc" class="btn btn-sm">🔄 刷新检测</button>
+            </div>
+        </div>
+
+        <!-- Subtitle Display -->
+        <div class="subtitle-area">
+            <div class="subtitle-panel outgoing">
+                <div class="subtitle-label">我说的话 (Outgoing)</div>
+                <div class="subtitle-original" id="outgoing-original">-</div>
+                <div class="subtitle-translated" id="outgoing-translated">-</div>
+            </div>
+            <div class="subtitle-panel incoming">
+                <div class="subtitle-label">别人说的话 (Incoming)</div>
+                <div class="subtitle-original" id="incoming-original">-</div>
+                <div class="subtitle-translated" id="incoming-translated">-</div>
+            </div>
+        </div>
+
+        <!-- Manual Text Input (Closed-mic) -->
+        <div class="text-input-area">
+            <input type="text" id="manual-text" placeholder="打字翻译 (闭麦时使用)..." />
+            <button id="btn-send-text" class="btn btn-primary">发送翻译</button>
+        </div>
+
+        <!-- API Keys Section -->
+        <div class="settings-area api-keys-section">
+            <h3 style="color:#4fc3f7;margin-bottom:12px">API Key 配置</h3>
+            <p style="color:#888;font-size:12px;margin-bottom:16px">输入Key后点击保存，系统自动写入 config/.env 文件</p>
+            <div class="api-key-grid">
+                <div class="form-group">
+                    <label>DashScope API Key <span class="tag required">必需</span></label>
+                    <div class="key-input-row">
+                        <input type="password" id="api-key-dashscope" placeholder="sk-..." />
+                        <button class="btn btn-sm toggle-vis" onclick="toggleVis(this)">👁</button>
+                    </div>
+                    <small>阿里云DashScope — 语音识别 + Qwen-MT翻译</small>
+                    <div class="key-links">
+                        <a href="https://dashscope.console.aliyun.com/apiKey" target="_blank" class="key-link cn">🇨🇳 国内获取</a>
+                        <a href="https://international.console.alibabacloud.com/apiKey" target="_blank" class="key-link intl">🌍 海外获取</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>DeepL API Key <span class="tag optional">可选</span></label>
+                    <div class="key-input-row">
+                        <input type="password" id="api-key-deepl" placeholder="..." />
+                        <button class="btn btn-sm toggle-vis" onclick="toggleVis(this)">👁</button>
+                    </div>
+                    <div class="key-links">
+                        <a href="https://www.deepl.com/pro-api" target="_blank" class="key-link intl">🌍 获取 Key</a>
+                        <a href="https://www.deepl.com/zh/pro-api" target="_blank" class="key-link cn">🇨🇳 中文页面</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>OpenRouter API Key <span class="tag optional">可选</span></label>
+                    <div class="key-input-row">
+                        <input type="password" id="api-key-openrouter" placeholder="sk-or-..." />
+                        <button class="btn btn-sm toggle-vis" onclick="toggleVis(this)">👁</button>
+                    </div>
+                    <small>LLM翻译 (GPT/Gemini/Claude等)</small>
+                    <div class="key-links">
+                        <a href="https://openrouter.ai/keys" target="_blank" class="key-link intl">🌍 获取 Key</a>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Soniox API Key <span class="tag optional">可选</span></label>
+                    <div class="key-input-row">
+                        <input type="password" id="api-key-soniox" placeholder="..." />
+                        <button class="btn btn-sm toggle-vis" onclick="toggleVis(this)">👁</button>
+                    </div>
+                    <small>多语言实时语音识别</small>
+                    <div class="key-links">
+                        <a href="https://soniox.com/account/api-keys" target="_blank" class="key-link intl">🌍 获取 Key</a>
+                    </div>
+                </div>
+            </div>
+            <button id="btn-save-keys" class="btn btn-primary" style="margin-top:8px">保存 API Keys</button>
+            <span id="keys-save-status" style="margin-left:12px;font-size:12px;color:#81c784"></span>
+        </div>
+
+        <!-- Settings Tabs -->
+        <div class="settings-area">
+            <div class="tabs">
+                <button class="tab active" data-tab="asr">语音识别</button>
+                <button class="tab" data-tab="translation">翻译设置</button>
+                <button class="tab" data-tab="reverse">反向翻译</button>
+                <button class="tab" data-tab="display">显示设置</button>
+                <button class="tab" data-tab="dictionary">字典管理</button>
+                <button class="tab" data-tab="osc">VRChat</button>
+            </div>
+
+            <!-- ASR Settings -->
+            <div class="tab-content active" id="tab-asr">
+                <h3>语音识别 (ASR)</h3>
+                <div class="form-group">
+                    <label>识别后端</label>
+                    <select id="asr-backend">
+                        <option value="dashscope">☁️ 阿里云 DashScope (云端, 推荐)</option>
+                        <option value="qwen">☁️ Qwen3 ASR (云端, DashScope)</option>
+                        <option value="local_sensevoice">💻 SenseVoice Small (本地)</option>
+                        <option value="faster_whisper">💻 faster-whisper (本地, 多语言, 推荐)</option>
+                    </select>
+                    <small>云端需要DashScope API Key, 本地需要下载模型</small>
+                </div>
+                <div class="form-group">
+                    <label>语言</label>
+                    <select id="asr-language">
+                        <option value="zh">中文</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="auto">自动检测</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>麦克风设备</label>
+                    <select id="mic-device">
+                        <option value="">默认设备</option>
+                    </select>
+                    <button id="btn-refresh-devices" class="btn btn-sm">刷新</button>
+                </div>
+                <div class="form-group" id="local-model-section" style="display:none">
+                    <label>本地模型</label>
+                    <div id="model-status">检查中...</div>
+                    <button id="btn-download-model" class="btn btn-sm">下载模型</button>
+                </div>
+            </div>
+
+            <!-- Translation Settings -->
+            <div class="tab-content" id="tab-translation">
+                <h3>翻译设置</h3>
+                <div class="form-group">
+                    <label>翻译后端</label>
+                    <select id="translation-backend">
+                        <option value="dashscope">☁️ DashScope Qwen-MT (推荐)</option>
+                        <option value="deepl">DeepL</option>
+                        <option value="openrouter">OpenRouter (LLM)</option>
+                        <option value="google">Google Translate (免费)</option>
+                        <option value="ctranslate2">💻 CTranslate2 (本地离线)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>目标语言</label>
+                    <select id="target-language">
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="zh">中文</option>
+                        <option value="ru">Русский</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Reverse Translation Settings -->
+            <div class="tab-content" id="tab-reverse">
+                <h3>反向翻译 (翻译别人说的话)</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="reverse-enabled" /> 启用反向翻译
+                    </label>
+                    <small>通过桌面音频回环捕获VRChat中的声音并翻译</small>
+                </div>
+                <div class="form-group">
+                    <label>🔊 音频监听设备 (选择你要监听的输出设备)</label>
+                    <select id="loopback-device">
+                        <option value="">自动检测 (默认扬声器)</option>
+                    </select>
+                    <button id="btn-refresh-loopback" class="btn btn-sm">刷新设备列表</button>
+                    <small>选择你的VR耳机/扬声器对应的回环设备，这样才能捕获VRChat中的声音</small>
+                </div>
+                <div class="form-group">
+                    <label>翻译后端</label>
+                    <select id="reverse-translation-backend">
+                        <option value="same">与主翻译相同</option>
+                        <option value="ctranslate2">💻 CTranslate2 (本地离线)</option>
+                        <option value="dashscope">☁️ DashScope Qwen-MT</option>
+                        <option value="google">Google Translate (免费)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>翻译目标语言</label>
+                    <select id="reverse-target-language">
+                        <option value="zh">中文</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="self-suppress" checked /> 自抑制
+                    </label>
+                    <small>发送自己的消息后短暂抑制翻译, 防止回译自己的TTS</small>
+                </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="tab-content" id="tab-display">
+                <h3>显示设置</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="show-partial" checked /> 显示部分结果
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="ja-furigana" /> 日文振假名
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="zh-pinyin" /> 中文拼音
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>文字风格</label>
+                    <select id="text-style">
+                        <option value="none">普通</option>
+                        <option value="small_caps">Small Caps</option>
+                        <option value="curly">Curly</option>
+                        <option value="magic">Magic</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dictionary Settings -->
+            <div class="tab-content" id="tab-dictionary">
+                <h3>字典管理</h3>
+                <p>字典用于纠正语音识别的错误 (如 "VR chat" → "VRChat")</p>
+                <div class="form-group">
+                    <button id="btn-update-dict" class="btn">更新官方字典</button>
+                    <span id="dict-status">-</span>
+                </div>
+                <div class="form-group">
+                    <label>添加自定义规则</label>
+                    <input type="text" id="dict-pattern" placeholder="错误文本 (如: VR chat)" />
+                    <input type="text" id="dict-replacement" placeholder="正确文本 (如: VRChat)" />
+                    <button id="btn-add-rule" class="btn btn-sm">添加</button>
+                </div>
+            </div>
+
+            <!-- OSC Settings -->
+            <div class="tab-content" id="tab-osc">
+                <h3>VRChat OSC 设置</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="osc-enabled" checked /> 启用OSC
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>发送端口</label>
+                    <input type="number" id="osc-send-port" value="9000" />
+                </div>
+                <div class="form-group">
+                    <label>监听端口</label>
+                    <input type="number" id="osc-listen-port" value="9001" />
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="mic-control" checked /> 游戏内闭麦控制
+                    </label>
+                    <small>VRChat中闭麦时自动暂停翻译</small>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="auto-start-pipeline" /> 打开网页自动启动翻译
+                    </label>
+                    <small>开启后打开网页会自动开始翻译管线</small>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <button id="btn-save-settings" class="btn btn-primary">保存设置</button>
+            <span id="save-status"></span>
+        </footer>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

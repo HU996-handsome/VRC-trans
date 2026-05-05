@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>VRC Overlay</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: transparent;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+        .overlay-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+        .panel {
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .panel.left {
+            background: rgba(0, 0, 0, 0.8);
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .panel.right {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        .label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .label.in { color: #81c784; }
+        .label.out { color: #4fc3f7; }
+        .text {
+            font-size: 16px;
+            line-height: 1.4;
+            word-break: break-all;
+        }
+        .text.partial { opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="overlay-container">
+        <div class="panel left">
+            <div class="label in">Others</div>
+            <div class="text" id="incoming">-</div>
+        </div>
+        <div class="panel right">
+            <div class="label out">Me</div>
+            <div class="text" id="outgoing">-</div>
+        </div>
+    </div>
+    <script>
+        async function poll() {
+            try {
+                const r = await fetch('/api/overlay');
+                const d = await r.json();
+                const inc = document.getElementById('incoming');
+                inc.textContent = d.in || '-';
+                inc.className = 'text' + (d.in_partial ? ' partial' : '');
+                const out = document.getElementById('outgoing');
+                out.textContent = d.out || '-';
+                out.className = 'text' + (d.out_partial ? ' partial' : '');
+            } catch(e) {}
+        }
+        setInterval(poll, 500);
+        poll();
+    </script>
+</body>
+</html>

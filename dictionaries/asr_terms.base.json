@@ -1,0 +1,75 @@
+{
+  "version": "bundled-2026.05.05",
+  "rules": [
+    {
+      "replacement": "VRChat",
+      "patterns": ["VR chat", "Vrchat", "VR Cat", "VRCat", "VR恰特", "VR查特"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "PhysBones",
+      "patterns": ["fiz bones", "fizz bones", "phys bones", "physics bones", "菲斯骨头"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "DeepSeek",
+      "patterns": ["Deep Seek", "Deepseek", "迪普西克"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "Quest",
+      "patterns": ["阔斯特", "夸斯特"],
+      "mode": "word",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "SteamVR",
+      "patterns": ["Steam VR", "SteamVR", "斯提姆VR"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "OpenAI",
+      "patterns": ["Open AI", "Openai", "欧派AI"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "Pico",
+      "patterns": ["皮克", "匹克"],
+      "mode": "word",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "Unity",
+      "patterns": ["优尼提", "尤尼提"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "Blender",
+      "patterns": ["布兰德", "布伦达"],
+      "mode": "word",
+      "languages": ["*"],
+      "case_sensitive": false
+    },
+    {
+      "replacement": "VRCX",
+      "patterns": ["VRC叉", "VRC X"],
+      "mode": "substring",
+      "languages": ["*"],
+      "case_sensitive": false
+    }
+  ]
+}

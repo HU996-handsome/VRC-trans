@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>VRC-Translator Panel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 12px;
+            user-select: none;
+            -webkit-app-region: drag;
+        }
+        .subtitle-row {
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 2px;
+        }
+        .label.out { color: #4fc3f7; }
+        .label.in { color: #81c784; }
+        .original { font-size: 13px; color: #ccc; }
+        .translated { font-size: 15px; color: #fff; font-weight: 500; }
+        .partial { opacity: 0.7; }
+        .muted-badge {
+            display: inline-block;
+            background: #f44336;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: 8px;
+        }
+        #text-input {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-top: 8px;
+            -webkit-app-region: no-drag;
+        }
+    </style>
+</head>
+<body>
+    <div class="subtitle-row">
+        <div class="label out">我说的话 <span id="muted-badge" class="muted-badge" style="display:none">闭麦</span></div>
+        <div class="original" id="out-orig">-</div>
+        <div class="translated" id="out-trans">-</div>
+    </div>
+    <div class="subtitle-row">
+        <div class="label in">别人说的话</div>
+        <div class="original" id="in-orig">-</div>
+        <div class="translated" id="in-trans">-</div>
+    </div>
+    <input type="text" id="text-input" placeholder="打字翻译..." />
+
+    <script>
+        const API = '/api/subtitles';
+        const SEND_API = '/api/send-text';
+        let pollTimer;
+
+        async function poll() {
+            try {
+                const r = await fetch(API);
+                const d = await r.json();
+                document.getElementById('out-orig').textContent = d.outgoing.original || '-';
+                const outTrans = document.getElementById('out-trans');
+                outTrans.textContent = d.outgoing.translated || '-';
+                outTrans.className = 'translated' + (d.outgoing.is_partial ? ' partial' : '');
+
+                document.getElementById('in-orig').textContent = d.incoming.original || '-';
+                const inTrans = document.getElementById('in-trans');
+                inTrans.textContent = d.incoming.translated || '-';
+                inTrans.className = 'translated' + (d.incoming.is_partial ? ' partial' : '');
+
+                document.getElementById('muted-badge').style.display = d.status.is_muted ? 'inline-block' : 'none';
+            } catch (e) {}
+        }
+
+        document.getElementById('text-input').addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                try {
+                    await fetch(SEND_API, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({text: e.target.value.trim()}),
+                    });
+                    e.target.value = '';
+                } catch (err) {}
+            }
+        });
+
+        pollTimer = setInterval(poll, 500);
+        poll();
+    </script>
+</body>
+</html>
