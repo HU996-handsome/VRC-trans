@@ -118,19 +118,19 @@ class OSCSender:
         safe = str(text or "").strip()
         if len(safe) <= self.max_length:
             return safe
-        # Multi-line: try to preserve both lines
+        # Multi-line: prioritize translation (what others read)
         lines = safe.split("\n", 1)
         if len(lines) == 2:
             orig, trans = lines
-            # Reserve space for newline
-            budget = self.max_length - 1
-            # Give at least 30% to original, rest to translation
-            orig_budget = max(10, int(budget * 0.3))
-            trans_budget = budget - orig_budget
-            if len(orig) > orig_budget:
-                orig = orig[:orig_budget - 1] + "…"
-            if len(trans) > trans_budget:
-                trans = trans[:trans_budget - 1] + "…"
+            budget = self.max_length - 1  # -1 for \n
+            # Translation gets priority: up to 90% of space
+            if len(orig) + len(trans) > budget:
+                orig_budget = max(6, budget - len(trans))
+                if len(orig) > orig_budget:
+                    orig = orig[:orig_budget - 1] + "…"
+                trans_budget = budget - len(orig)
+                if len(trans) > trans_budget:
+                    trans = trans[:trans_budget - 1] + "…"
             return f"{orig}\n{trans}"
         return safe[:self.max_length - 3] + "..."
 
