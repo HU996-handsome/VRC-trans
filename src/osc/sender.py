@@ -118,21 +118,17 @@ class OSCSender:
         safe = str(text or "").strip()
         if len(safe) <= self.max_length:
             return safe
-        # Multi-line: prioritize translation (what others read)
+        # Multi-line: try dual-line, fall back to translation only
         lines = safe.split("\n", 1)
         if len(lines) == 2:
             orig, trans = lines
-            budget = self.max_length - 1  # -1 for \n
-            # Translation gets priority: up to 90% of space
-            if len(orig) + len(trans) > budget:
-                orig_budget = max(6, budget - len(trans))
-                if len(orig) > orig_budget:
-                    orig = orig[:orig_budget - 1] + "…"
-                trans_budget = budget - len(orig)
-                if len(trans) > trans_budget:
-                    trans = trans[:trans_budget - 1] + "…"
-            return f"{orig}\n{trans}"
-        return safe[:self.max_length - 3] + "..."
+            if len(orig) + 1 + len(trans) <= self.max_length:
+                return f"{orig}\n{trans}"
+            # Doesn't fit: send translation only (never truncate)
+            if len(trans) <= self.max_length:
+                return trans
+        # Last resort: truncate
+        return safe[:self.max_length - 1] + "…"
 
     def _enqueue(self, text: str, ongoing: bool, priority: int):
         """Enqueue with duplicate suppression."""
