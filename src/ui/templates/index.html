@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VRC-Translator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Top Bar -->
+        <nav class="topbar">
+            <div class="topbar-left">
+                <div class="logo">
+                    <span class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                            <path d="M2 17l10 5 10-5"/>
+                            <path d="M2 12l10 5 10-5"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">VRC-Translator</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="status-chip game" id="game-chip">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="6" width="20" height="12" rx="2"/>
+                        <path d="M6 12h4"/>
+                        <path d="M8 10v4"/>
+                        <path d="M15 11h1"/>
+                        <path d="M18 13h1"/>
+                    </svg>
+                    <span id="game-text">未检测</span>
+                </div>
+                <div class="status-chip" id="status-chip">
+                    <span class="status-dot"></span>
+                    <span class="status-text">离线</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="control-left">
+                    <button id="btn-start" class="btn btn-primary btn-lg" disabled title="请先启动 VRChat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5,3 19,12 5,21"/>
+                        </svg>
+                        启动
+                    </button>
+                    <button id="btn-stop" class="btn btn-danger btn-lg" style="display:none">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        </svg>
+                        停止
+                    </button>
+                </div>
+                <div class="control-center">
+                    <button id="btn-mute" class="btn btn-ghost" title="闭麦翻译">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            <line x1="12" y1="19" x2="12" y2="23"/>
+                            <line x1="8" y1="23" x2="16" y2="23"/>
+                        </svg>
+                        <span id="mute-text">开麦</span>
+                    </button>
+                    <button id="btn-reverse" class="btn btn-ghost" title="反向翻译">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="17 1 21 5 17 9"/>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                            <polyline points="7 23 3 19 7 15"/>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                        </svg>
+                        <span>反向</span>
+                    </button>
+                </div>
+                <div class="control-right">
+                    <button id="btn-settings" class="btn btn-ghost" title="设置">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Translation Display -->
+            <section class="translation-display">
+                <div class="trans-card outgoing">
+                    <div class="trans-header">
+                        <span class="trans-label">我说的</span>
+                        <span class="trans-lang" id="outgoing-lang"></span>
+                    </div>
+                    <div class="trans-body">
+                        <div class="trans-original" id="outgoing-original">-</div>
+                        <div class="trans-result" id="outgoing-translated">-</div>
+                    </div>
+                </div>
+                <div class="trans-card incoming">
+                    <div class="trans-header">
+                        <span class="trans-label">他们说的</span>
+                        <span class="trans-lang" id="incoming-lang"></span>
+                    </div>
+                    <div class="trans-body">
+                        <div class="trans-original" id="incoming-original">-</div>
+                        <div class="trans-result" id="incoming-translated">-</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Input -->
+            <section class="quick-input">
+                <input type="text" id="manual-text" placeholder="打字翻译..." />
+                <button id="btn-send" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"/>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                </button>
+            </section>
+        </main>
+
+        <!-- Settings Drawer -->
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <aside class="drawer" id="settings-drawer">
+            <div class="drawer-header">
+                <h2>设置</h2>
+                <button id="btn-close-drawer" class="btn btn-ghost btn-sm">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="drawer-body">
+                <!-- Tabs -->
+                <div class="drawer-tabs">
+                    <button class="drawer-tab active" data-tab="api">API</button>
+                    <button class="drawer-tab" data-tab="asr">语音</button>
+                    <button class="drawer-tab" data-tab="translate">翻译</button>
+                    <button class="drawer-tab" data-tab="reverse">反向</button>
+                    <button class="drawer-tab" data-tab="display">显示</button>
+                    <button class="drawer-tab" data-tab="osc">OSC</button>
+                </div>
+
+                <!-- API Tab -->
+                <div class="drawer-content active" id="tab-api">
+                    <div class="setting-group">
+                        <label class="setting-label">DashScope API Key <span class="badge required">必需</span></label>
+                        <div class="input-row">
+                            <input type="password" id="api-key-dashscope" placeholder="sk-..." class="input" />
+                            <button class="btn btn-ghost btn-sm toggle-vis" onclick="toggleVis(this)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="setting-hint">阿里云 DashScope — 语音识别 + Qwen-MT 翻译</div>
+                        <div class="setting-links">
+                            <a href="https://dashscope.console.aliyun.com/apiKey" target="_blank" class="link">获取 Key</a>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">DeepL API Key <span class="badge optional">可选</span></label>
+                        <div class="input-row">
+                            <input type="password" id="api-key-deepl" placeholder="..." class="input" />
+                            <button class="btn btn-ghost btn-sm toggle-vis" onclick="toggleVis(this)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="setting-links">
+                            <a href="https://www.deepl.com/pro-api" target="_blank" class="link">获取 Key</a>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">OpenRouter API Key <span class="badge optional">可选</span></label>
+                        <div class="input-row">
+                            <input type="password" id="api-key-openrouter" placeholder="sk-or-..." class="input" />
+                            <button class="btn btn-ghost btn-sm toggle-vis" onclick="toggleVis(this)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="setting-hint">LLM 翻译 (GPT/Gemini/Claude)</div>
+                        <div class="setting-links">
+                            <a href="https://openrouter.ai/keys" target="_blank" class="link">获取 Key</a>
+                        </div>
+                    </div>
+                    <button id="btn-save-keys" class="btn btn-primary btn-block">保存 API Keys</button>
+                    <div id="keys-save-status" class="save-status"></div>
+                </div>
+
+                <!-- ASR Tab -->
+                <div class="drawer-content" id="tab-asr">
+                    <div class="setting-group">
+                        <label class="setting-label">识别后端</label>
+                        <select id="asr-backend" class="select">
+                            <option value="dashscope">DashScope (云端, 推荐)</option>
+                            <option value="qwen">Qwen3 ASR (云端)</option>
+                            <option value="local_sensevoice">SenseVoice (本地)</option>
+                            <option value="faster_whisper">faster-whisper (本地)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">语言</label>
+                        <select id="asr-language" class="select">
+                            <option value="zh">中文</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="auto">自动检测</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">麦克风</label>
+                        <div class="input-row">
+                            <select id="mic-device" class="select">
+                                <option value="">默认设备</option>
+                            </select>
+                            <button id="btn-refresh-devices" class="btn btn-ghost btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Translation Tab -->
+                <div class="drawer-content" id="tab-translate">
+                    <div class="setting-group">
+                        <label class="setting-label">翻译后端</label>
+                        <select id="translation-backend" class="select">
+                            <option value="dashscope">DashScope Qwen-MT (推荐)</option>
+                            <option value="deepl">DeepL</option>
+                            <option value="openrouter">OpenRouter (LLM)</option>
+                            <option value="google">Google Translate (免费)</option>
+                            <option value="ctranslate2">CTranslate2 (本地)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">目标语言</label>
+                        <select id="target-language" class="select">
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="zh">中文</option>
+                            <option value="ru">Русский</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Reverse Tab -->
+                <div class="drawer-content" id="tab-reverse">
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="reverse-enabled" class="switch-input" />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                启用反向翻译
+                            </label>
+                        </label>
+                        <div class="setting-hint">捕获游戏内声音并翻译显示</div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">监听设备</label>
+                        <div class="input-row">
+                            <select id="loopback-device" class="select">
+                                <option value="">自动检测</option>
+                            </select>
+                            <button id="btn-refresh-loopback" class="btn btn-ghost btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10"/>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">翻译目标语言</label>
+                        <select id="reverse-target-language" class="select">
+                            <option value="zh">中文</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="self-suppress" class="switch-input" checked />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                自抑制
+                            </label>
+                        </label>
+                        <div class="setting-hint">发送消息后短暂抑制翻译</div>
+                    </div>
+                </div>
+
+                <!-- Display Tab -->
+                <div class="drawer-content" id="tab-display">
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="show-partial" class="switch-input" checked />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                显示部分结果
+                            </label>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="dual-line" class="switch-input" checked />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                双行显示（原文+翻译）
+                            </label>
+                        </label>
+                        <div class="setting-hint">聊天框上方显示原文，下方显示翻译</div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="ja-furigana" class="switch-input" />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                日文振假名
+                            </label>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="zh-pinyin" class="switch-input" />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                中文拼音
+                            </label>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">文字风格</label>
+                        <select id="text-style" class="select">
+                            <option value="none">普通</option>
+                            <option value="small_caps">Small Caps</option>
+                            <option value="curly">Curly</option>
+                            <option value="magic">Magic</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- OSC Tab -->
+                <div class="drawer-content" id="tab-osc">
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="osc-enabled" class="switch-input" checked />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                启用 OSC
+                            </label>
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">发送端口</label>
+                        <input type="number" id="osc-send-port" value="9000" class="input" />
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">监听端口</label>
+                        <input type="number" id="osc-listen-port" value="9001" class="input" />
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="mic-control" class="switch-input" checked />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                游戏内闭麦控制
+                            </label>
+                        </label>
+                        <div class="setting-hint">VRChat 中闭麦时自动暂停翻译</div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <label class="switch-label">
+                                <input type="checkbox" id="auto-start-pipeline" class="switch-input" />
+                                <span class="switch-track"><span class="switch-thumb"></span></span>
+                                自动启动翻译
+                            </label>
+                        </label>
+                        <div class="setting-hint">打开网页自动开始翻译</div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="drawer-footer">
+                    <button id="btn-save-settings" class="btn btn-primary btn-block">保存设置</button>
+                    <div id="save-status" class="save-status"></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

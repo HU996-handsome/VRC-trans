@@ -1,0 +1,39 @@
+# VRC-Translator - Core Dependencies
+# Install: pip install -r requirements.txt
+
+# Web UI
+flask>=3.0
+flask-cors>=4.0
+
+# Audio
+pyaudio>=0.2.14
+pyaudiowpatch>=0.2.12
+numpy>=1.24
+soxr>=0.3
+
+# ASR - DashScope (cloud)
+dashscope>=1.20
+websockets>=12.0
+
+# ASR - Local (SenseVoice)
+onnxruntime>=1.16
+
+# Translation
+openai>=1.0
+googletrans==4.0.0-rc1
+deepl>=1.17
+
+# VRChat OSC
+python-osc>=1.8
+vrchat-oscquery>=0.3
+
+# Text processing (optional)
+pykakasi>=0.6
+pypinyin>=0.49
+jieba>=0.42
+fancify-text>=0.1
+arabic-reshaper>=3.0
+python-bidi>=0.4
+
+# Utilities
+python-dotenv>=1.0

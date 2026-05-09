@@ -1,0 +1,49 @@
+# Secrets
+config/.env
+config/settings.json
+*.key
+*.pem
+
+# Logs
+*.log
+error.log
+server.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Data (user-specific)
+data/models/
+data/logs/
+*.onnx
+*.bin
+*.jit
+
+# Temp
+*.tmp
+*.bak
+.pid
