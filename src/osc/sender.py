@@ -87,7 +87,7 @@ class OSCSender:
         """Send partial/ongoing text (typing indicator)."""
         if not text or not self._running:
             return
-        safe = self._normalize_text(text)
+        safe = str(text).strip()
         if not safe:
             return
         self._enqueue(safe, ongoing=True, priority=PRIORITY_LOW)
