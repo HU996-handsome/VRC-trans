@@ -94,6 +94,21 @@ def main():
     web_thread = threading.Thread(target=run_web, daemon=True)
     web_thread.start()
 
+    # ── Auto-open browser ──
+    def _open_browser():
+        time.sleep(1.5)
+        url = f"http://127.0.0.1:{settings.ui.web_port}"
+        try:
+            import webbrowser
+            try:
+                webbrowser.get("edge").open(url)
+            except Exception:
+                webbrowser.open(url)
+        except Exception:
+            pass
+
+    threading.Thread(target=_open_browser, daemon=True).start()
+
     # ── Keep alive loop ──
     try:
         while True:
