@@ -118,17 +118,16 @@ class OSCSender:
         safe = str(text or "").strip()
         if not safe:
             return []
-        # Short enough for dual-line
-        if len(safe) <= self.max_length:
-            return [safe]
         # Dual-line: check if both lines fit
         lines = safe.split("\n", 1)
         if len(lines) == 2:
             orig, trans = lines
             if len(orig) + 1 + len(trans) <= self.max_length:
                 return [f"{orig}\n{trans}"]
-            # Doesn't fit: send translation only
+            # Doesn't fit: send full translation only (no truncation)
             return [trans]
+        if len(safe) <= self.max_length:
+            return [safe]
         return [safe]
 
     def _enqueue(self, text: str, ongoing: bool, priority: int):
