@@ -120,47 +120,43 @@ class OSCSender:
         return safe[:self.max_length - 1] + "…"
 
     def _split_message(self, text: str) -> list[str]:
-        """Split text into messages that fit within max_length.
+        """Split text into messages. Long translations show only the latest part.
 
-        For dual-line (original\ntranslation):
-        - If both fit: send as one message
-        - If not: send translation only, split if needed
-        For single-line: split into chunks if needed.
+        VRChat replaces the previous chatbox message when a new one is sent,
+        so we send: [truncated, remaining] — the user only sees the remaining part.
         """
         safe = str(text or "").strip()
         if not safe:
             return []
+        if len(safe) <= self.max_length:
+            return [safe]
 
-        # Dual-line case
+        # Dual-line: send translation only
         lines = safe.split("\n", 1)
         if len(lines) == 2:
             orig, trans = lines
             if len(orig) + 1 + len(trans) <= self.max_length:
                 return [f"{orig}\n{trans}"]
-            # Doesn't fit: send translation only, split if needed
-            return self._split_text(trans)
+            # Doesn't fit: work with translation only
+            return self._split_long(trans)
 
-        return self._split_text(safe)
+        return self._split_long(safe)
 
-    def _split_text(self, text: str) -> list[str]:
-        """Split a single text into chunks of max_length."""
+    def _split_long(self, text: str) -> list[str]:
+        """Split long text: send truncated first, then remaining to replace it."""
         if len(text) <= self.max_length:
             return [text]
-        parts = []
-        while text:
-            if len(text) <= self.max_length:
-                parts.append(text)
+        # Find a good split point
+        split_at = self.max_length - 1
+        for sep in ['. ', '! ', '? ', '。', '！', '？', ', ', '，']:
+            idx = text[:self.max_length].rfind(sep)
+            if idx > self.max_length // 2:
+                split_at = idx + len(sep)
                 break
-            # Try to split at a sentence boundary
-            split_at = self.max_length - 1
-            for sep in ['. ', '! ', '? ', '。', '！', '？', ', ', '，']:
-                idx = text[:self.max_length].rfind(sep)
-                if idx > self.max_length // 2:
-                    split_at = idx + len(sep)
-                    break
-            parts.append(text[:split_at])
-            text = text[split_at:].lstrip()
-        return parts
+        first = text[:split_at].rstrip()
+        remaining = text[split_at:].strip()
+        # Send both: first is truncated, second replaces it (user only sees second)
+        return [first, remaining] if remaining else [first]
 
     def _enqueue(self, text: str, ongoing: bool, priority: int):
         """Enqueue with duplicate suppression."""
