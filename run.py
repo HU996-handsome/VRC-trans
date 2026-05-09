@@ -21,7 +21,7 @@ import warnings
 warnings.filterwarnings("ignore", category=RuntimeError, message="Event loop is closed")
 
 def _suppress_unraisable(args):
-    if "Event loop is closed" in str(args.exc_value):
+    if args.exc_type is RuntimeError:
         return
     sys.__unraisablehook__(args)
 
