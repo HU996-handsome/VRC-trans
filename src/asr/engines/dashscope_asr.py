@@ -25,9 +25,17 @@ class _Callback:
     def on_close(self) -> None:
         self._asr._connected = False
 
+    _auth_error_shown = False
+
     def on_error(self, result) -> None:
-        if "NO_VALID_AUDIO" in str(result.code):
-            return  # Normal during silence, ignore
+        code = str(result.code)
+        if "NO_VALID_AUDIO" in code:
+            return
+        if "401" in code or "Unauthorized" in code:
+            if not _Callback._auth_error_shown:
+                _Callback._auth_error_shown = True
+                print("[ASR] API Key 无效，请在设置中填入正确的 Key 并重启程序", flush=True)
+            return
         logger.error(f"DashScope ASR error: {result.code} {result.message}")
 
     def on_complete(self) -> None:

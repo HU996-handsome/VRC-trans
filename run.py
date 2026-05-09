@@ -13,7 +13,19 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.getcwd())
 
 import logging
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.CRITICAL)
+logging.getLogger("asyncio").setLevel(logging.CRITICAL)
+
+# Suppress asyncio event loop cleanup errors
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeError, message="Event loop is closed")
+
+def _suppress_unraisable(args):
+    if "Event loop is closed" in str(args.exc_value):
+        return
+    sys.__unraisablehook__(args)
+
+sys.unraisablehook = _suppress_unraisable
 
 
 def main():
