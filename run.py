@@ -12,6 +12,9 @@ os.environ.setdefault('no_proxy', '*')
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.getcwd())
 
+import logging
+logging.basicConfig(level=logging.WARNING)
+
 
 def main():
     # ── 依赖检查 ──
@@ -71,6 +74,10 @@ def main():
 
     # ── 启动 Web UI ──
     app = create_app(settings, state)
+
+    # Suppress Flask request logs
+    import logging as _logging
+    _logging.getLogger("werkzeug").setLevel(_logging.WARNING)
 
     def run_web():
         app.run(host="127.0.0.1", port=settings.ui.web_port, debug=False, use_reloader=False)

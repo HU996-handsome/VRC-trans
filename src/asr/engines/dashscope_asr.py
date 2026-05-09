@@ -26,6 +26,8 @@ class _Callback:
         self._asr._connected = False
 
     def on_error(self, result) -> None:
+        if "NO_VALID_AUDIO" in str(result.code):
+            return  # Normal during silence, ignore
         logger.error(f"DashScope ASR error: {result.code} {result.message}")
 
     def on_complete(self) -> None:
@@ -99,9 +101,9 @@ class DashScopeASR(BaseASR):
                 self._create_recognition()
                 self._recognition.start()
                 self._running = True
-                print(f"[ASR] Started (model={self.model})", flush=True)
+                logger.info(f"ASR started (model={self.model})")
             except Exception as e:
-                print(f"[ASR] Start error: {e}", flush=True)
+                logger.error(f"ASR start error: {e}")
                 self._running = False
                 self._recognition = None
 

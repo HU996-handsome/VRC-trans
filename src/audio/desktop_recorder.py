@@ -57,7 +57,7 @@ class DesktopRecorder:
                 logger.info("Desktop Silero VAD initialized")
                 return
         except Exception as e:
-            logger.warning(f"Desktop Silero VAD failed: {e}, using Energy VAD")
+            logger.debug(f"Desktop Silero VAD failed: {e}, using Energy VAD")
 
         self._vad = _DesktopEnergyVAD()
         logger.info("Desktop Energy VAD initialized (fallback)")
@@ -118,7 +118,7 @@ class DesktopRecorder:
             native_rate = int(loopback_info["defaultSampleRate"])
             native_channels = int(loopback_info["maxInputChannels"])
 
-            print(f"[Desktop] Loopback device: {device_name} (rate={native_rate}, ch={native_channels})", flush=True)
+            logger.info(f"Loopback device: {device_name} (rate={native_rate}, ch={native_channels})")
 
             try:
                 self._stream = pa.open(
@@ -140,7 +140,7 @@ class DesktopRecorder:
                 try:
                     data = self._stream.read(4096, exception_on_overflow=False)
                 except Exception as e:
-                    print(f"[Desktop] Read error: {e}", flush=True)
+                    logger.debug(f"Read error: {e}")
                     time.sleep(0.1)
                     continue
 
@@ -234,7 +234,6 @@ class DesktopRecorder:
             audio = np.concatenate(self._speech_buffer)
             duration = len(audio) / self.sample_rate
             if duration > 0.5:  # Min 0.5s
-                print(f"[Desktop] Speech flushed: {duration:.1f}s", flush=True)
                 self.on_speech_end(audio)
         self._speech_buffer.clear()
         self._is_speaking = False
