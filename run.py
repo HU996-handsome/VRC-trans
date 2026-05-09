@@ -17,9 +17,6 @@ logging.basicConfig(level=logging.CRITICAL)
 logging.getLogger("asyncio").setLevel(logging.CRITICAL)
 
 # Suppress asyncio event loop cleanup errors
-import warnings
-warnings.filterwarnings("ignore", category=RuntimeError, message="Event loop is closed")
-
 def _suppress_unraisable(args):
     if args.exc_type is RuntimeError:
         return
