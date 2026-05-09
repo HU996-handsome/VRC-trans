@@ -114,20 +114,10 @@ class OSCSender:
     # ── Internal ────────────────────────────────────────────────
 
     def _split_message(self, text: str) -> list[str]:
-        """Short text: dual-line. Long text: translation only, no truncation."""
+        """Send text as-is (dual-line or single-line)."""
         safe = str(text or "").strip()
         if not safe:
             return []
-        # Dual-line: check if both lines fit
-        lines = safe.split("\n", 1)
-        if len(lines) == 2:
-            orig, trans = lines
-            if len(orig) + 1 + len(trans) <= self.max_length:
-                return [f"{orig}\n{trans}"]
-            # Doesn't fit: send full translation only (no truncation)
-            return [trans]
-        if len(safe) <= self.max_length:
-            return [safe]
         return [safe]
 
     def _enqueue(self, text: str, ongoing: bool, priority: int):
